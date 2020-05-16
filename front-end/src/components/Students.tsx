@@ -131,7 +131,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 setFilter={this.setFilter}
                 column="lesson"
                 title="Dersler"
-                filter={<LessonFilter/>} />
+                filter={<LessonFilter data={this.state} setFilter={(value: any) => this.setFilter('lesson', value) } />} />
             </tr>
           </thead>
           <tbody>
