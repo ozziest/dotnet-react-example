@@ -1,9 +1,11 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilter, faSortAlphaUp, faSortAlphaDown } from '@fortawesome/free-solid-svg-icons'
-import classNames from "classnames";
+import classNames from 'classnames';
+import debounce from 'lodash/debounce'
 
 interface IState {
+  searchValue: any,
   isActive: boolean;
 }
 
@@ -11,6 +13,7 @@ interface IProps {
   column: string,
   title: string,
   filter: any,
+  setFilter: any,
   sorting: any,
   clear: any,
   data: any
@@ -19,6 +22,7 @@ interface IProps {
 export default class ColumnFilter extends React.Component<IProps, IState> {
   state: IState;
   wrapperRef: any;
+  search: any;
 
   constructor(props: IProps) {
     super(props);
@@ -28,8 +32,12 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
     this.sorting = this.sorting.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
     this.sortDirectly = this.sortDirectly.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
     // Initilization of the state
-    this.state = { isActive: false };
+    this.state = { isActive: false, searchValue: '' };
+    this.search = debounce((value: any) => {
+      this.props.setFilter(this.props.column, value)
+    }, 300)
   }
 
   componentDidMount() {
@@ -70,11 +78,22 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
     this.props.sorting(this.props.data.orderBy, 'ASC')
   }
 
+  handleSearchChange (event: any) {
+    this.setState({
+      searchValue: event.target.value
+    });
+    this.search(event.target.value)
+  }
+
   render () {
     let box;
     let filterComponent = <div className="form-group">
       <label>{this.props.title}</label>
-      <input type="text" className="form-control form-control-sm" placeholder="Ara" />
+      <input type="text"
+        className="form-control form-control-sm"
+        placeholder="Ara"
+        value={this.state.searchValue}
+        onChange={this.handleSearchChange} />
     </div>
 
     if (this.props.filter) {

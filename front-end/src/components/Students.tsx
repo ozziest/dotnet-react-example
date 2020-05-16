@@ -40,6 +40,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
+    this.setFilter = this.setFilter.bind(this)
   }
 
   onSort (column: string, type: string) {
@@ -54,6 +55,15 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       orderBy: 'no',
       orderType: 'ASC'
     })
+  }
+
+  setFilter (column: string, value: any) {
+    this.setState((prevState) => ({
+      filters: {
+        ...prevState.filters,
+        [column]: value
+       } as any
+    }))
   }
 
   render () {
@@ -75,11 +85,46 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
           <thead>
             <tr>
               <th className="row-count">#</th>
-              <ColumnFilter clear={this.clearFilter} data={this.state} sorting={this.onSort} column="no" title="No" filter={null} />
-              <ColumnFilter clear={this.clearFilter} data={this.state} sorting={this.onSort} column="name" title="Ad" filter={null} />
-              <ColumnFilter clear={this.clearFilter} data={this.state} sorting={this.onSort} column="surname" title="Soyad" filter={null} />
-              <ColumnFilter clear={this.clearFilter} data={this.state} sorting={this.onSort} column="branch" title="Şube" filter={<BranchFilter />} />
-              <ColumnFilter clear={this.clearFilter} data={this.state} sorting={this.onSort} column="lesson" title="Dersler" filter={<LessonFilter/>} />
+              <ColumnFilter
+                clear={this.clearFilter}
+                data={this.state}
+                sorting={this.onSort}
+                setFilter={this.setFilter}
+                column="no"
+                title="No"
+                filter={null} />
+              <ColumnFilter
+                clear={this.clearFilter}
+                data={this.state}
+                sorting={this.onSort}
+                setFilter={this.setFilter}
+                column="name"
+                title="Ad"
+                filter={null} />
+              <ColumnFilter
+                clear={this.clearFilter}
+                data={this.state}
+                sorting={this.onSort}
+                setFilter={this.setFilter}
+                column="surname"
+                title="Soyad"
+                filter={null} />
+              <ColumnFilter
+                clear={this.clearFilter}
+                data={this.state}
+                sorting={this.onSort}
+                setFilter={this.setFilter}
+                column="branch"
+                title="Şube"
+                filter={<BranchFilter />} />
+              <ColumnFilter
+                clear={this.clearFilter}
+                data={this.state}
+                sorting={this.onSort}
+                setFilter={this.setFilter}
+                column="lesson"
+                title="Dersler"
+                filter={<LessonFilter/>} />
             </tr>
           </thead>
           <tbody>
