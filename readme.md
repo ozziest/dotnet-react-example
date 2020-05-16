@@ -1,0 +1,3 @@
+# Dotnet Core & React Example
+
+This is an example project for practices old habits...
