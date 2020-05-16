@@ -8,8 +8,8 @@ interface IFilter {
   no: string | null,
   name: string | null,
   surname: string | null,
-  branch: -1,
-  lesson: -1
+  branch: number,
+  lesson: number
 }
 
 interface IState {
@@ -31,42 +31,114 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       page: 1,
       recordPerPage: 10,
       filters: {
-        no: null,
-        name: null,
-        surname: null,
+        no: '',
+        name: '',
+        surname: '',
         branch: -1,
         lesson: -1
       }
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
-    this.setFilter = this.setFilter.bind(this)
+    this.setNoFilter = this.setNoFilter.bind(this)
+    this.setNameFilter = this.setNameFilter.bind(this)
+    this.setSurnameFilter = this.setSurnameFilter.bind(this)
+    this.setBranchFilter = this.setBranchFilter.bind(this)
+    this.setLessonFilter = this.setLessonFilter.bind(this)
   }
 
-  onSort (column: string, type: string) {
+  sortDirectly (column: string, type: string) {
     this.setState({
       orderBy: column,
       orderType: type
-    }, () => {
-      this.paginate()
-    })
+    }, this.paginate)
+  }
+
+  onSort (column: string, type: string, force: boolean | null) {
+    if (force) {
+      return this.sortDirectly(column, type)
+    }
+
+
+    if (this.state.orderBy !== column) {
+      return this.sortDirectly(column, 'ASC')
+    }
+
+    if (this.state.orderType === 'ASC') {
+      return this.sortDirectly(this.state.orderBy, 'DESC')
+    }
+
+    this.sortDirectly(this.state.orderBy, 'ASC')
   }
 
   clearFilter () {
     this.setState({
       orderBy: 'no',
-      orderType: 'ASC'
+      orderType: 'ASC',
+      page: 1,
+      recordPerPage: 10,
+      filters: {
+        no: '',
+        name: '',
+        surname: '',
+        branch: -1,
+        lesson: -1
+      }
     }, () => {
       this.paginate()
     })
   }
 
-  setFilter (column: string, value: any) {
-    this.setState((prevState) => ({
+  setNoFilter (value: string) {
+    this.setState(prevState => ({
+      ...prevState,
       filters: {
-        ...prevState.filters,
-        [column]: value
-       } as any
+        no: value
+      } as any
+    }), () => {
+      this.paginate()
+    })
+  }
+
+  setNameFilter (value: string) {
+    this.setState(prevState => ({
+      ...prevState,
+      filters: {
+        name: value
+      } as any
+    }), () => {
+      this.paginate()
+    })
+  }
+
+  setSurnameFilter (value: string) {
+    this.setState(prevState => ({
+      ...prevState,
+      filters: {
+        surname: value
+      } as any
+    }), () => {
+      this.paginate()
+    })
+  }
+
+  setBranchFilter (value: string) {
+    this.setState(prevState => ({
+      ...prevState,
+      filters: {
+        branch: value
+      } as any
+    }), () => {
+      this.paginate()
+    })
+  }
+
+  setLessonFilter (value: string) {
+    this.setState(prevState => ({
+      ...prevState,
+      filters: {
+        lesson: value
+      } as any
     }), () => {
       this.paginate()
     })
@@ -96,7 +168,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setFilter}
+                setFilter={this.setNoFilter}
                 column="no"
                 title="No"
                 filter={null} />
@@ -104,7 +176,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setFilter}
+                setFilter={this.setNameFilter}
                 column="name"
                 title="Ad"
                 filter={null} />
@@ -112,7 +184,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setFilter}
+                setFilter={this.setSurnameFilter}
                 column="surname"
                 title="Soyad"
                 filter={null} />
@@ -120,18 +192,18 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setFilter}
+                setFilter={this.setBranchFilter}
                 column="branch"
                 title="Şube"
-                filter={<BranchFilter data={this.state} setFilter={(value: any) => this.setFilter('branch', value) } />} />
+                filter={<BranchFilter data={this.state} setFilter={this.setBranchFilter} />} />
               <ColumnFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setFilter}
+                setFilter={this.setLessonFilter}
                 column="lesson"
                 title="Dersler"
-                filter={<LessonFilter data={this.state} setFilter={(value: any) => this.setFilter('lesson', value) } />} />
+                filter={<LessonFilter data={this.state} setFilter={this.setLessonFilter} />} />
             </tr>
           </thead>
           <tbody>

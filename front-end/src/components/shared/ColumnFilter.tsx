@@ -1,8 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilter, faSortAlphaUp, faSortAlphaDown } from '@fortawesome/free-solid-svg-icons'
-import classNames from 'classnames';
-import debounce from 'lodash/debounce'
+import ColumnOrder from './ColumnOrder';
 
 interface IState {
   searchValue: any,
@@ -13,7 +12,7 @@ interface IProps {
   column: string,
   title: string,
   filter: any,
-  setFilter: any,
+  setFilter: any | null,
   sorting: any,
   clear: any,
   data: any
@@ -29,15 +28,9 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
     // We should handle click outside
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
-    this.sorting = this.sorting.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
-    this.sortDirectly = this.sortDirectly.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
     // Initilization of the state
     this.state = { isActive: false, searchValue: '' };
-    this.search = debounce((value: any) => {
-      this.props.setFilter(this.props.column, value)
-    }, 300)
   }
 
   componentDidMount() {
@@ -62,29 +55,6 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
     this.setState({ isActive : !this.state.isActive })
   }
 
-  sortDirectly (type: string) {
-    this.props.sorting(this.props.column, type)
-  }
-
-  sorting () {
-    if (this.props.data.orderBy !== this.props.column) {
-      return this.props.sorting(this.props.column, 'ASC')
-    }
-
-    if (this.props.data.orderType === 'ASC') {
-      return this.props.sorting(this.props.data.orderBy, 'DESC')
-    }
-
-    this.props.sorting(this.props.data.orderBy, 'ASC')
-  }
-
-  handleSearchChange (event: any) {
-    this.setState({
-      searchValue: event.target.value
-    });
-    this.search(event.target.value)
-  }
-
   render () {
     let box;
     let filterComponent = <div className="form-group">
@@ -92,8 +62,8 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
       <input type="text"
         className="form-control form-control-sm"
         placeholder="Ara"
-        value={this.state.searchValue}
-        onChange={this.handleSearchChange} />
+        value={this.props.data.filters[this.props.column]}
+        onChange={(event) => this.props.setFilter(event.target.value)} />
     </div>
 
     if (this.props.filter) {
@@ -107,32 +77,11 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
         </div>
         <div className="body">
           <form>
-            <div className="form-group">
-              <label>Sıralama</label>
-              <br />
-              <div className="btn-group" role="group" aria-label="Basic example">
-                <button type="button"
-                  className={classNames({
-                    btn: true,
-                    'btn-sm': true,
-                    'btn-light': true,
-                    active: this.props.data.orderBy === this.props.column && this.props.data.orderType === 'ASC'
-                  })}
-                  onClick={() => this.sortDirectly('ASC')}>
-                  A → Z
-                </button>
-                <button type="button"
-                  className={classNames({
-                    btn: true,
-                    'btn-sm': true,
-                    'btn-light': true,
-                    active: this.props.data.orderBy === this.props.column && this.props.data.orderType === 'DESC'
-                  })}
-                  onClick={() => this.sortDirectly('DESC')}>
-                  Z → A
-                </button>
-              </div>
-            </div>
+            <ColumnOrder
+              orderBy={this.props.data.orderBy}
+              orderType={this.props.data.orderType}
+              column={this.props.column}
+              sortDirectly={this.props.sorting} />
             {filterComponent}
           </form>
         </div>
@@ -154,7 +103,7 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
 
     return (
       <th>
-        <div className="column-name" onClick={this.sorting}>
+        <div className="column-name" onClick={() => this.props.sorting(this.props.column, 'ASC')}>
           {this.props.title}
           <span className="sort-icon float-right">{sortIcon}</span>
         </div>
