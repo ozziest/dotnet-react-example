@@ -1,0 +1,83 @@
+.table thead th {
+  background-color: lighten($primary, 65%);
+  color: $black;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background-color: lighten($primary, 62%);
+    transition: background $transition-speed;
+  }
+
+  &.row-count {
+    width: 1%;
+  }
+
+  & li {
+    list-style: none;
+    position: absolute;
+    top: 8px;
+    right: 0px;
+
+    & div.filter-linkt {
+      margin-right: 7px;
+      &:hover {
+        color: $primary;
+        transition: background $transition-speed;
+      }
+    }
+  
+    & ul.filter-box {
+      position: absolute;
+      width: 250px;
+      z-index: 9999;
+      top: 0px;
+      left: 20px;
+      border: 2px solid $primary;
+      border-radius: $border-radius;
+      padding: 0px;
+      font-size: 14px;
+      font-weight: normal;
+      
+      & div {
+        padding: 10px;
+
+        &.header {
+          background-color: $primary;
+          color: $white;
+        }
+
+        &.body {
+          background-color: $white;
+          
+          & form {
+
+            & label {
+              font-weight: bold;
+            }
+
+            div.form-group {
+              margin-bottom: 0px;
+              padding-bottom: 0px;
+            }
+
+            div.btn-group {
+              width: 100%;
+              padding: 0px;
+            }
+          }
+        }
+  
+        &.footer {
+          padding-left: 20px;
+          padding-right: 20px;
+          background-color: $light;
+        }  
+      }
+    }
+  }
+}
+
+.table th, .table td {
+  padding: 0.5rem;
+}

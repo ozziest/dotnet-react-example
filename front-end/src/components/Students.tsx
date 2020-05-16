@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from './shared/Navigation';
+import ColumnFilter from './shared/ColumnFilter';
 
 export default () => {
   return (
@@ -11,19 +12,23 @@ export default () => {
         </button>
       </h2>
 
+      <hr />
+
       <table className="table table-border">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Ad</th>
-            <th>Soyad</th>
-            <th>Şube</th>
+            <th className="row-count">#</th>
+            <th>No <ColumnFilter></ColumnFilter></th>
+            <th>Ad <ColumnFilter></ColumnFilter></th>
+            <th>Soyad <ColumnFilter></ColumnFilter></th>
+            <th>Şube <ColumnFilter></ColumnFilter></th>
             <th>Dersler</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>1</td>
+            <td>23</td>
             <td>Özgür</td>
             <td>Işıklı</td>
             <td>12-BT</td>

@@ -1,8 +1,19 @@
 // Override default variables before the import
 // $body-bg: #000;
+$primary: #1d3983;
+$black: rgba(#000, 0.78);
+$transition-speed: 0.3s;
+$border-radius: 4px;
+$gray: #e8e8e8;
 
 // Import Bootstrap and its default variables
 @import '~bootstrap/scss/bootstrap.scss';
 
+@import './base.scss';
+
 // Import component bases styles
 @import './components/app.scss';
+
+// Shared bootstrap components
+@import './shared/table.scss';
+
