@@ -8,8 +8,8 @@ interface IFilter {
   no: string | null,
   name: string | null,
   surname: string | null,
-  branch: number[],
-  lesson: number[]
+  branch: -1,
+  lesson: -1
 }
 
 interface IState {
@@ -34,8 +34,8 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         no: null,
         name: null,
         surname: null,
-        branch: [],
-        lesson: []
+        branch: -1,
+        lesson: -1
       }
     };
     this.onSort = this.onSort.bind(this);
@@ -47,6 +47,8 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.setState({
       orderBy: column,
       orderType: type
+    }, () => {
+      this.paginate()
     })
   }
 
@@ -54,6 +56,8 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.setState({
       orderBy: 'no',
       orderType: 'ASC'
+    }, () => {
+      this.paginate()
     })
   }
 
@@ -63,7 +67,13 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         ...prevState.filters,
         [column]: value
        } as any
-    }))
+    }), () => {
+      this.paginate()
+    })
+  }
+
+  paginate () {
+    console.log('paginate', JSON.stringify(this.state))
   }
 
   render () {
@@ -78,9 +88,6 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
   
         <hr />
 
-        {this.state.orderBy} <br />
-        {this.state.orderType}
-  
         <table className="table table-border">
           <thead>
             <tr>
@@ -116,7 +123,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 setFilter={this.setFilter}
                 column="branch"
                 title="Şube"
-                filter={<BranchFilter />} />
+                filter={<BranchFilter data={this.state} setFilter={(value: any) => this.setFilter('branch', value) } />} />
               <ColumnFilter
                 clear={this.clearFilter}
                 data={this.state}
