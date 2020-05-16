@@ -62,7 +62,7 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
       <input type="text"
         className="form-control form-control-sm"
         placeholder="Ara"
-        value={this.props.data.filters[this.props.column]}
+        value={this.props.data[this.props.column]}
         onChange={(event) => this.props.setFilter(event.target.value)} />
     </div>
 

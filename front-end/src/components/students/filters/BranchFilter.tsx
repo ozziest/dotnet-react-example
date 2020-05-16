@@ -16,7 +16,7 @@ export default class BranchFilter extends React.Component<IProps, IState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
-      value: this.props.data.filters.branch,
+      value: this.props.data.branch,
       branches: [
         { label: 'Tümü', value: -1 },
         { label: "9-A", value: 1 },

@@ -4,20 +4,16 @@ import ColumnFilter from './shared/ColumnFilter';
 import LessonFilter from './students/filters/LessonFilter';
 import BranchFilter from './students/filters/BranchFilter';
 
-interface IFilter {
-  no: string | null,
-  name: string | null,
-  surname: string | null,
-  branch: number,
-  lesson: number
-}
-
 interface IState {
   orderBy: string,
   orderType: string,
   page: number,
   recordPerPage: number,
-  filters: IFilter
+  no: string | null,
+  name: string | null,
+  surname: string | null,
+  branch: number,
+  lesson: number
 }
 
 export default class Students extends React.Component<Readonly<{}>, IState> {
@@ -30,13 +26,11 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       orderType: 'ASC',
       page: 1,
       recordPerPage: 10,
-      filters: {
-        no: '',
-        name: '',
-        surname: '',
-        branch: -1,
-        lesson: -1
-      }
+      no: '',
+      name: '',
+      surname: '',
+      branch: -1,
+      lesson: -1
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
@@ -59,7 +53,6 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       return this.sortDirectly(column, type)
     }
 
-
     if (this.state.orderBy !== column) {
       return this.sortDirectly(column, 'ASC')
     }
@@ -77,69 +70,52 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       orderType: 'ASC',
       page: 1,
       recordPerPage: 10,
-      filters: {
-        no: '',
-        name: '',
-        surname: '',
-        branch: -1,
-        lesson: -1
-      }
+      no: '',
+      name: '',
+      surname: '',
+      branch: -1,
+      lesson: -1
     }, () => {
       this.paginate()
     })
   }
 
   setNoFilter (value: string) {
-    this.setState(prevState => ({
-      ...prevState,
-      filters: {
-        no: value
-      } as any
-    }), () => {
+    this.setState({
+      no: value
+    }, () => {
       this.paginate()
     })
   }
 
   setNameFilter (value: string) {
-    this.setState(prevState => ({
-      ...prevState,
-      filters: {
-        name: value
-      } as any
-    }), () => {
+    this.setState({
+      name: value
+    }, () => {
       this.paginate()
     })
   }
 
   setSurnameFilter (value: string) {
-    this.setState(prevState => ({
-      ...prevState,
-      filters: {
-        surname: value
-      } as any
-    }), () => {
+    this.setState({
+      surname: value
+    }, () => {
       this.paginate()
     })
   }
 
-  setBranchFilter (value: string) {
-    this.setState(prevState => ({
-      ...prevState,
-      filters: {
-        branch: value
-      } as any
-    }), () => {
+  setBranchFilter (value: number) {
+    this.setState({
+      branch: value
+    }, () => {
       this.paginate()
     })
   }
 
-  setLessonFilter (value: string) {
-    this.setState(prevState => ({
-      ...prevState,
-      filters: {
-        lesson: value
-      } as any
-    }), () => {
+  setLessonFilter (value: number) {
+    this.setState({
+      lesson: value
+    }, () => {
       this.paginate()
     })
   }

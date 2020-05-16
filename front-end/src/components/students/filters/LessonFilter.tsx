@@ -21,7 +21,7 @@ export default class LessonFilter extends React.Component<IProps, IState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
-      value: this.props.data.filters.lesson,
+      value: this.props.data.lesson,
       lessons: [
         { title: 'Tümü', id: -1 },
         { title: "Matematik", id: 1 },
