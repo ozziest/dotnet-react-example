@@ -39,17 +39,28 @@
       }
     }
   
-    & ul.filter-box {
+    & ul.filter-box {     
       position: absolute;
       width: 250px;
       z-index: 9999;
-      top: 0px;
-      left: 20px;
+      top: 30px;
+      margin-right: -25px;
+      right: 100%;
       border: 2px solid $primary;
       border-radius: $border-radius;
       padding: 0px;
       font-size: 14px;
       font-weight: normal;
+
+      &:before {
+        content: '';
+        right: 7px;
+        margin-top: -8px;
+        position: absolute;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid $primary;
+      }
       
       & div {
         padding: 10px;
