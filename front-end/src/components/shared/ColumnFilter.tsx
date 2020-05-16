@@ -8,10 +8,33 @@ interface IState {
 
 export default class ColumnFilter extends React.Component<Readonly<{}>, IState> {
   state: IState;
+  wrapperRef: any;
 
   constructor(props: Readonly<{}>) {
     super(props);
+    // We should handle click outside
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+
     this.state = { isActive: false };
+  }
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+  
+  setWrapperRef (node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: { target: any; }) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({ isActive: false })
+    }
   }
 
   toggleActive () {
@@ -21,7 +44,7 @@ export default class ColumnFilter extends React.Component<Readonly<{}>, IState> 
   render () {
     let box;
     if (this.state.isActive) {
-      box = <ul className="filter-box">
+      box = <ul className="filter-box" ref={this.setWrapperRef}>
         <div className="header">
           Filtrele
         </div>

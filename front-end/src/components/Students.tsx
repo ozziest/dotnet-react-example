@@ -22,7 +22,7 @@ export default () => {
             <th>Ad <ColumnFilter></ColumnFilter></th>
             <th>Soyad <ColumnFilter></ColumnFilter></th>
             <th>Şube <ColumnFilter></ColumnFilter></th>
-            <th>Dersler</th>
+            <th>Dersler <ColumnFilter></ColumnFilter></th>
           </tr>
         </thead>
         <tbody>
