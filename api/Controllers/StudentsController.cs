@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 using Advancity.Models;
-using Advancity.Requests;
+using Advancity.Repositories;
+using Advancity.Requests.Students;
 using Advancity.Responses;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -31,22 +31,21 @@ namespace Advancity.Controllers
     [Route("api/students")]
     public Pagination<Student> Paginate([FromQuery] PaginateStudentRequest request)
     {
-      Pagination<Student> response = new Pagination<Student>(request.page, request.recordPerPage);
+      Pagination<Student> pagination = new Pagination<Student>();
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
-        string query = @"
-          FROM Students
-          LIMIT @startAt, @recordPerPage
-        ";
-
-        response.SetTotal(db, query);
-
-        response.data = db.Query<Student>("SELECT * " + query, new {
-          startAt = ((response.page - 1) * response.recordPerPage),
-          recordPerPage = response.recordPerPage
-        }).ToList();
+        Paginator paginator = new Paginator(request);
+        pagination = paginator
+          .Table("Students")
+          .SetDefaultOrderBy("StudentNo", "ASC")
+          .OrderBy(new Dictionary<string, string>() {
+            { "no", "StudentNo" },
+            { "name", "Name" },
+            { "surname", "Surname" }
+          })
+          .Fetch<Student>(db);
       }
-      return response;
+      return pagination;
     }
 
     [HttpPost]

@@ -113,10 +113,13 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
   }
 
   paginate (page: number|null) {
+    console.log(this.state)
     axios({
       method: 'GET',
       url: 'https://localhost:5001/api/students',
       params: {
+        orderBy: this.state.orderBy,
+        orderType: this.state.orderType,
         page: page ? page : this.state.pagination.page,
         recordPerPage: this.state.pagination.recordPerPage
       }

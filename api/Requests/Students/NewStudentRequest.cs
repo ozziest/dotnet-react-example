@@ -1,4 +1,4 @@
-namespace Advancity.Requests
+namespace Advancity.Requests.Students
 {
   public class NewStudentRequest
   {
