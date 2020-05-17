@@ -35,6 +35,18 @@ namespace Advancity.Controllers
       Pagination<StudentResponse> pagination = new Pagination<StudentResponse>();
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
+        // User should be able to filter students by their selected lessons
+        List<long> studentIdsThatHaveSelectedLesson = new List<long>();
+        if (request.lesson > -1) {
+          List<StudentLesson> result = db
+            .Query<StudentLesson>(
+              @"SELECT StudentLessons.StudentId FROM StudentLessons WHERE StudentLessons.LessonId = @id",
+              new { id = request.lesson}
+            )
+            .ToList();
+          studentIdsThatHaveSelectedLesson = result.Select(item => item.StudentId).ToList();
+        }
+
         Paginator paginator = new Paginator(request);
         pagination = paginator
           .Table("Students")
@@ -61,11 +73,18 @@ namespace Advancity.Controllers
             AND (
               @branch = -1 OR Students.BranchId = @branch
             )
+            AND (
+              @isLessonSelected = FALSE OR (
+                Students.Id IN (@studentIds)
+              )
+            )
           ", new Dictionary<string, dynamic>() {
             { "name", "%" + request.name + "%" },
             { "surname", "%" + request.surname + "%" },
             { "no", "%" + request.no + "%" },
-            { "branch", request.branch }
+            { "branch", request.branch },
+            { "isLessonSelected", request.lesson > 0 },
+            { "studentIds", studentIdsThatHaveSelectedLesson },
           })
           .SetDefaultOrderBy("StudentNo", "ASC")
           .OrderBy(new Dictionary<string, string>() {
