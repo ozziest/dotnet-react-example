@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Navigation from './shared/Navigation';
 import TextColumnFilter from './shared/TextColumnFilter';
 import LessonFilter from './students/filters/LessonFilter';
@@ -40,6 +41,19 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.setFilter = this.setFilter.bind(this);
     this.openStudentModel = this.openStudentModel.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
+  }
+
+  componentDidMount () {
+    axios({
+      method: 'GET',
+      url: 'https://localhost:5001/api/students',
+      params: {
+        page: 1,
+        recordPerPage: 5
+      }
+    }).then((response) => {
+      console.log(response)
+    })
   }
 
   sortDirectly (column: string, type: string) {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Advancity.Models;
 using Advancity.Requests;
+using Advancity.Responses;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,28 @@ namespace Advancity.Controllers
     public StudentsController(IConfiguration configuration)
     {
       this.configuration = configuration;
+    }
+
+    [HttpGet]
+    [Route("api/students")]
+    public Pagination<Student> Paginate([FromQuery] PaginateStudentRequest request)
+    {
+      Pagination<Student> response = new Pagination<Student>(request.page, request.recordPerPage);
+      using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
+      {
+        string query = @"
+          FROM Students
+          LIMIT @startAt, @recordPerPage
+        ";
+
+        response.SetTotal(db, query);
+
+        response.data = db.Query<Student>("SELECT * " + query, new {
+          startAt = ((response.page - 1) * response.recordPerPage),
+          recordPerPage = response.recordPerPage
+        }).ToList();
+      }
+      return response;
     }
 
     [HttpPost]
