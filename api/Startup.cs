@@ -10,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
 
-namespace advancity
+namespace Advancity
 {
     public class Startup
     {

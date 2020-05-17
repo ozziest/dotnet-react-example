@@ -1,6 +1,6 @@
 using System;
 
-namespace advancity
+namespace Advancity
 {
     public class WeatherForecast
     {

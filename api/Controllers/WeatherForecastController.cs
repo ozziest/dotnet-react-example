@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace advancity.Controllers
+namespace Advancity.Controllers
 {
     [ApiController]
     [Route("api/users")]
