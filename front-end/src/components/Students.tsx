@@ -20,6 +20,7 @@ interface IState {
   branch: number,
   lesson: number,
   isStudentModalOpen: boolean,
+  currentStudent: StudentModel|null,
   pagination: IPagination<StudentModel>
 }
 
@@ -40,6 +41,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       branch: -1,
       lesson: -1,
       isStudentModalOpen: false,
+      currentStudent: null,
       pagination: {
         page: 1,
         pages: 0,
@@ -54,6 +56,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.openStudentModal = this.openStudentModal.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
     this.paginate = this.paginate.bind(this);
+    this.editStudent = this.editStudent.bind(this);
   }
 
   componentDidMount () {
@@ -110,7 +113,6 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
   }
 
   paginate (page: number|null) {
-    console.log('paginate', page)
     axios({
       method: 'GET',
       url: 'https://localhost:5001/api/students',
@@ -122,7 +124,6 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       this.setState({
         pagination: response.data
       })
-      console.log(response.data)
     })
   }
 
@@ -134,7 +135,15 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
 
   closeStudentModal () {
     this.setState({
-      isStudentModalOpen: false
+      isStudentModalOpen: false,
+      currentStudent: null
+    })
+  }
+
+  editStudent (student: StudentModel) {
+    this.setState({
+      isStudentModalOpen: true,
+      currentStudent: student
     })
   }
 
@@ -142,7 +151,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     let studentModal;
 
     if (this.state.isStudentModalOpen) {
-      studentModal = <StudentModal close={this.closeStudentModal} />
+      studentModal = <StudentModal student={this.state.currentStudent} close={this.closeStudentModal} />
     }
 
     return (
@@ -206,7 +215,11 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                     recordPerPage={this.state.pagination.recordPerPage}
                     index={index} />
                 </td>
-                <td>{item.studentNo}</td>
+                <td>
+                  <button className="btn btn-light btn-sm" onClick={() => this.editStudent(item)}>
+                    {item.studentNo}
+                  </button>
+                </td>
                 <td>{item.name}</td>
                 <td>{item.surname}</td>
                 <td>{item.branchId}</td>

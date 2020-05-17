@@ -1,8 +1,10 @@
 import React from 'react';
 import axios from 'axios'
 import ISelectItem from './../shared/interfaces/ISelectItem'
+import StudentModel from './StudentModel'
 
 interface IState {
+  id: number|null,
   name: string,
   surname: string,
   number: string,
@@ -11,6 +13,7 @@ interface IState {
 }
 
 interface IProps {
+  student: StudentModel|null,
   close (): void
 }
 
@@ -20,6 +23,7 @@ export default class StudentModal extends React.Component<IProps> {
   constructor (props: IProps) {
     super(props);
     this.state = {
+      id: null,
       name: '',
       surname: '',
       number: '',
@@ -42,6 +46,15 @@ export default class StudentModal extends React.Component<IProps> {
           }
         })
       })
+      if (this.props.student) {
+        this.setState({
+          id: this.props.student.id,
+          name: this.props.student.name,
+          surname: this.props.student.surname,
+          number: this.props.student.studentNo,
+          branchId: this.props.student.branchId
+        })  
+      }
     })
   }
 
@@ -59,6 +72,7 @@ export default class StudentModal extends React.Component<IProps> {
   
   save () {
     const data = {
+      id: this.state.id,
       name: this.state.name,
       surname: this.state.surname,
       number: this.state.number,

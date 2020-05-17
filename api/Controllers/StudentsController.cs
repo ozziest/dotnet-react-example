@@ -56,12 +56,25 @@ namespace Advancity.Controllers
       Student student = new Student();
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
-        long id = db.Insert(new Student() {
-          Name = form.name,
-          Surname = form.surname,
-          StudentNo = form.number,
-          BranchId = form.branchId
-        });
+        long id = -1;
+        if (form.id == null) {
+          id = db.Insert(new Student() {
+            Name = form.name,
+            Surname = form.surname,
+            StudentNo = form.number,
+            BranchId = form.branchId
+          });
+        } else {
+          id = (long) form.id;
+          db.Update(new Student() {
+            Id = id,
+            Name = form.name,
+            Surname = form.surname,
+            StudentNo = form.number,
+            BranchId = form.branchId
+          });
+        }
+
         student = db.Get<Student>(id);
       }
       return student;
