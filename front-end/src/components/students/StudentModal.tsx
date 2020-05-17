@@ -14,6 +14,7 @@ interface IState {
 
 interface IProps {
   student: StudentModel|null,
+  refresh (page: number|null): void,
   close (): void
 }
 
@@ -80,6 +81,7 @@ export default class StudentModal extends React.Component<IProps> {
     }
     axios.post('https://localhost:5001/api/students', data)
       .then(() => {
+        this.props.refresh(null)
         this.props.close()
       })
   }

@@ -13,7 +13,7 @@ export default class Navigation extends React.Component<IProps> {
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           {times(this.props.pages, (index) =>
-            <li className="page-item" key={index}>
+            <li className={'page-item ' + (this.props.page === (index + 1) ? 'active': '')} key={index}>
               <button className="page-link" onClick={() => this.props.paginate(index + 1)}>{index + 1}</button>
             </li>
           )}

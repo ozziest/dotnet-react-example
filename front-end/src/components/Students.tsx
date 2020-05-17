@@ -151,7 +151,10 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     let studentModal;
 
     if (this.state.isStudentModalOpen) {
-      studentModal = <StudentModal student={this.state.currentStudent} close={this.closeStudentModal} />
+      studentModal = <StudentModal
+        refresh={this.paginate}
+        student={this.state.currentStudent}
+        close={this.closeStudentModal} />
     }
 
     return (
