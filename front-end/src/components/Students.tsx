@@ -183,6 +183,17 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         close={this.closeStudentModal} />
     }
 
+    let notFoundMessage;
+    if (this.state.pagination.total === 0) {
+      notFoundMessage = <tr>
+        <td colSpan={10}>
+          <div className="alert alert-warning">
+            Henüz bir öğrenci kaydı yapılmadı.
+          </div>
+        </td>
+      </tr>
+    }
+
     return (
       <div>
         <h2>
@@ -236,6 +247,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
             </tr>
           </thead>
           <tbody>
+            {notFoundMessage}
             {this.state.pagination.data.map((item, index) =>
               <tr key={item.id}>
                 <td>
