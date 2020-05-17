@@ -3,6 +3,7 @@ import Navigation from './shared/Navigation';
 import TextColumnFilter from './shared/TextColumnFilter';
 import LessonFilter from './students/filters/LessonFilter';
 import BranchFilter from './students/filters/BranchFilter';
+import StudentModal from './students/StudentModal'
 
 interface IState {
   orderBy: string,
@@ -13,7 +14,8 @@ interface IState {
   name: string | null,
   surname: string | null,
   branch: number,
-  lesson: number
+  lesson: number,
+  isStudentModalOpen: boolean
 }
 
 export default class Students extends React.Component<Readonly<{}>, IState> {
@@ -30,11 +32,14 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       name: '',
       surname: '',
       branch: -1,
-      lesson: -1
+      lesson: -1,
+      isStudentModalOpen: false
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
-    this.setFilter = this.setFilter.bind(this)
+    this.setFilter = this.setFilter.bind(this);
+    this.openStudentModel = this.openStudentModel.bind(this);
+    this.closeStudentModal = this.closeStudentModal.bind(this);
   }
 
   sortDirectly (column: string, type: string) {
@@ -88,15 +93,35 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     console.log('paginate', JSON.stringify(this.state))
   }
 
+  openStudentModel () {
+    this.setState({
+      isStudentModalOpen: true
+    })
+  }
+
+  closeStudentModal () {
+    this.setState({
+      isStudentModalOpen: false
+    })
+  }
+
   render () {
+    let studentModal;
+
+    if (this.state.isStudentModalOpen) {
+      studentModal = <StudentModal close={this.closeStudentModal} />
+    }
+
     return (
       <div>
         <h2>
           Öğrenciler
-          <button className="btn btn-success float-right">
+          <button className="btn btn-success float-right" onClick={this.openStudentModel}>
             Ekle
           </button>
         </h2>
+
+        {studentModal}
   
         <hr />
 
