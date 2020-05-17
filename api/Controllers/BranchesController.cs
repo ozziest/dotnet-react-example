@@ -14,27 +14,27 @@ using Microsoft.Extensions.Logging;
 namespace Advancity.Controllers
 {
   [ApiController]
-  public class LessonsController : ControllerBase
+  public class BranchesController : ControllerBase
   {
 
     private IConfiguration configuration { get; set; }
 
-    public LessonsController(IConfiguration configuration)
+    public BranchesController(IConfiguration configuration)
     {
       this.configuration = configuration;
     }
 
     [HttpGet]
-    [Route("api/lessons")]
-    public List<Lesson> Get()
+    [Route("api/branches")]
+    public List<Branch> Get()
     {
-      List<Lesson> lessons = new List<Lesson>();
+      List<Branch> branches = new List<Branch>();
       Console.WriteLine(this.configuration.GetSection("ConnectionString").Value);
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
-        lessons = db.Query<Lesson>("SELECT * FROM Lessons").ToList();
+        branches = db.Query<Branch>("SELECT * FROM Branches").ToList();
       }
-      return lessons;
+      return branches;
     }
   }
 }
