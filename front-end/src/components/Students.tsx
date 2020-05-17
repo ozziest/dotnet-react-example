@@ -252,7 +252,11 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 <td>{item.name}</td>
                 <td>{item.surname}</td>
                 <td>{item.branchTitle}</td>
-                <td></td>
+                <td>
+                  <button className="btn btn-light btn-sm">
+                    {item.totalLesson} Adet
+                  </button>
+                </td>
               </tr>
             )}
           </tbody>

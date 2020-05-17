@@ -38,7 +38,15 @@ namespace Advancity.Controllers
         Paginator paginator = new Paginator(request);
         pagination = paginator
           .Table("Students")
-          .Select("Students.*, Branches.Title AS BranchTitle")
+          .Select(@"
+            Students.*,
+            Branches.Title AS BranchTitle,
+            (
+              SELECT COUNT(*)
+              FROM StudentLessons
+              WHERE StudentLessons.StudentId = Students.Id
+            ) AS TotalLesson
+          ")
           .Joins("LEFT JOIN Branches ON Branches.Id = Students.BranchId")
           .Where(@"
             (
@@ -64,7 +72,8 @@ namespace Advancity.Controllers
             { "no", "Students.StudentNo" },
             { "name", "Students.Name" },
             { "surname", "Students.Surname" },
-            { "branch", "Branches.Title" }
+            { "branch", "Branches.Title" },
+            { "lesson", "TotalLesson" }
           })
           .Fetch<StudentResponse>(db);
       }

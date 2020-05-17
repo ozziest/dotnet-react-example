@@ -4,5 +4,6 @@ export default interface StudentModel {
   name: string,
   surname: string,
   studentNo: string,
-  branchTitle: string
+  branchTitle: string,
+  totalLesson: number
 }
