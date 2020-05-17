@@ -29,7 +29,6 @@ namespace Advancity.Controllers
     public List<Branch> Get()
     {
       List<Branch> branches = new List<Branch>();
-      Console.WriteLine(this.configuration.GetSection("ConnectionString").Value);
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
         branches = db.Query<Branch>("SELECT * FROM Branches").ToList();

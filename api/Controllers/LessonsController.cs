@@ -29,7 +29,6 @@ namespace Advancity.Controllers
     public List<Lesson> Get()
     {
       List<Lesson> lessons = new List<Lesson>();
-      Console.WriteLine(this.configuration.GetSection("ConnectionString").Value);
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
         lessons = db.Query<Lesson>("SELECT * FROM Lessons").ToList();

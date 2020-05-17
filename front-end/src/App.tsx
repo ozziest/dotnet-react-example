@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './components/Navbar';
 import Students from './components/Students';
+import { ToastContainer } from 'react-toastify';
 
 export default () => {
   return (
@@ -13,6 +14,7 @@ export default () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

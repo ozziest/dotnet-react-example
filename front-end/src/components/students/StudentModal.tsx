@@ -3,6 +3,7 @@ import axios from 'axios'
 import ISelectItem from './../shared/interfaces/ISelectItem'
 import StudentModel from './StudentModel'
 import ValidationError from './../shared/ValidationError'
+import { toast } from 'react-toastify';
 
 interface IState {
   id: number|null,
@@ -87,11 +88,17 @@ export default class StudentModal extends React.Component<IProps> {
       .then(() => {
         this.props.refresh(null)
         this.props.close()
+        toast.success('Kaydedildi!')
       })
       .catch((error) => {
-        this.setState({
-          errors: error.response.data.errors
-        })
+        if (error.response.status === 400) {
+          toast.error('Eksik bilgi gönderdildi!')
+          this.setState({
+            errors: error.response.data.errors
+          })
+        } else {
+          toast.error('Bir hata meydana geldi!')
+        }
       })
   }
 
