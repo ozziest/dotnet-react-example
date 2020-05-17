@@ -10,7 +10,7 @@ interface IProps {
 export default class Navigation extends React.Component<IProps> {
   render () {
     return (
-      <nav aria-label="Page navigation example">
+      <nav className="float-right">
         <ul className="pagination">
           {times(this.props.pages, (index) =>
             <li className={'page-item ' + (this.props.page === (index + 1) ? 'active': '')} key={index}>

@@ -12,3 +12,13 @@ body {
     }
   }
 }
+
+select.record-per-page {
+  width: 80px;
+  float: left;
+}
+
+span.pagination-total {
+  padding-top: 6px;
+  margin-left: 10px;
+}

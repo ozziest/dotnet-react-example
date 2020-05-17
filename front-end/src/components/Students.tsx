@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Navigation from './shared/Navigation';
+import RecordPerPageSelector from './shared/RecordPerPageSelector'
 import TextColumnFilter from './shared/TextColumnFilter';
 import PaginationRowCount from './shared/PaginationRowCount';
 import LessonFilter from './students/filters/LessonFilter';
@@ -59,6 +60,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.closeStudentModal = this.closeStudentModal.bind(this);
     this.paginate = this.paginate.bind(this);
     this.editStudent = this.editStudent.bind(this);
+    this.setRecordPerPage = this.setRecordPerPage.bind(this);
     this.searchQuery = debounce(() => {
       this.paginate(null)
     }, 300)
@@ -121,6 +123,14 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     })
   }
 
+  setRecordPerPage (recordPerPage: number) {
+    this.setState({
+      recordPerPage: recordPerPage
+    }, () => {
+      this.paginate(null)
+    })
+  }
+
   paginate (page: number|null) {
     axios({
       method: 'GET',
@@ -129,7 +139,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         orderBy: this.state.orderBy,
         orderType: this.state.orderType,
         page: page ? page : this.state.pagination.page,
-        recordPerPage: this.state.pagination.recordPerPage,
+        recordPerPage: this.state.recordPerPage,
         no: this.state.no,
         name: this.state.name,
         surname: this.state.surname,
@@ -249,6 +259,10 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         </table>
   
         <div>
+          <RecordPerPageSelector
+            recordPerPage={this.state.recordPerPage}
+            setRecordPerPage={this.setRecordPerPage}/>
+          <span className="float-left pagination-total">Toplam {this.state.pagination.total} adet kayıt bulundu.</span>
           <Navigation
             pages={this.state.pagination.pages}
             page={this.state.pagination.page}
