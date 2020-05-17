@@ -61,9 +61,10 @@ namespace Advancity.Controllers
           })
           .SetDefaultOrderBy("StudentNo", "ASC")
           .OrderBy(new Dictionary<string, string>() {
-            { "no", "StudentNo" },
-            { "name", "Name" },
-            { "surname", "Surname" }
+            { "no", "Students.StudentNo" },
+            { "name", "Students.Name" },
+            { "surname", "Students.Surname" },
+            { "branch", "Branches.Title" }
           })
           .Fetch<StudentResponse>(db);
       }

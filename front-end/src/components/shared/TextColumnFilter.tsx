@@ -1,9 +1,6 @@
 import React from 'react';
 import BaseColumnFilter from './BaseColumnFilter'
-
-interface IState {
-  isActive: boolean;
-}
+import IColumnFilterState from './interfaces/IColumnFilterState'
 
 interface IProps {
   column: string,
@@ -14,8 +11,8 @@ interface IProps {
   data: any
 }
 
-export default class ColumnFilter extends React.Component<IProps, IState> {
-  state: IState;
+export default class ColumnFilter extends React.Component<IProps, IColumnFilterState> {
+  state: IColumnFilterState;
   wrapperRef: any;
   search: any;
   sendQuery: any;

@@ -1,25 +1,42 @@
 import React from 'react';
+import axios from 'axios';
 import TextColumnFilter from './../../shared/TextColumnFilter'
 import BaseColumnFilter from './../../shared/BaseColumnFilter'
 import ISelectItem from './../../shared/interfaces/ISelectItem'
+import IColumnFilterState from './../../shared/interfaces/IColumnFilterState'
 
-interface IState {
+interface IState extends IColumnFilterState {
   branches: ISelectItem[]
 }
 
 export default class BranchFilter extends TextColumnFilter {
-  localState: IState;
+  state: IState;
 
   constructor (props: any) {
     super(props)
-    this.localState = {
-      branches: [
-        { title: 'Tümü', id: -1 },
-        { title: "9-A", id: 1 },
-        { title: "10-A", id: 2 },
-        { title: "11-A", id: 3 }
-      ]
+    this.state = {
+      isActive: false,
+      branches: []
     }
+  }
+
+  componentDidMount () {
+    console.log('componentDidMount')
+    axios.get('https://localhost:5001/api/branches').then(response => {
+      response.data.unshift({
+        id: -1,
+        title: 'Tümü'
+      })
+
+      this.setState({
+        branches: response.data.map((item: ISelectItem) => {
+          return {
+            id: item.id,
+            title: item.title
+          }
+        })
+      } as any)
+    })
   }
 
   render () {
@@ -28,7 +45,7 @@ export default class BranchFilter extends TextColumnFilter {
       <select className="form-control"
         value={this.props.data[this.props.column]}
         onChange={(event) => this.props.setFilter(this.props.column, event.target.value, false)}>
-        {this.localState.branches.map((branch) => 
+        {this.state.branches.map((branch) => 
           <option key={branch.id} value={branch.id}>{branch.title}</option>
         )}
       </select>
