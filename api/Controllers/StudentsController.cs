@@ -97,6 +97,21 @@ namespace Advancity.Controllers
           });
         }
 
+        // We should delete old data.
+        db.Execute("DELETE FROM StudentLessons WHERE StudentId = @StudentId", new {
+          StudentId = id
+        });
+
+        // Adding lessons
+        List<StudentLesson> lessons = new List<StudentLesson>();
+        form.selectedLessons.ForEach(lessonId => {
+          lessons.Add(new StudentLesson() {
+            StudentId = id,
+            LessonId = lessonId
+          });
+        });
+        db.Insert<List<StudentLesson>>(lessons);
+
         student = db.Get<Student>(id);
       }
       return student;

@@ -1,11 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using Dapper.Contrib.Extensions;
 
 namespace Advancity.Models
 {
   public class Branch
   {
-    [Key]
-    public int Id { get; set; }
+    [ExplicitKey]
+    public long? Id { get; set; }
     public string Title { get; set; }
     public int Level { get; set; }
   }
