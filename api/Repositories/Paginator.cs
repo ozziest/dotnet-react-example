@@ -12,11 +12,14 @@ namespace Advancity.Repositories {
     private string table { get; set; }
     private string orderBy { get; set; }
     private string orderType { get; set; }
+    private string whereSQL { get; set; }
+    private Dictionary<string, dynamic> whereArguments { get; set; }
     private PaginateRequest request { get; set; }
 
     public Paginator (PaginateRequest request) {
       this.orderType = "ASC";
       this.request = request;
+      this.whereSQL = "";
     }
 
     public Paginator Table(string table) {
@@ -50,6 +53,12 @@ namespace Advancity.Repositories {
       return this;
     }
 
+    public Paginator Where(string whereSQL, Dictionary<string, dynamic> whereArguments) {
+      this.whereSQL = whereSQL;
+      this.whereArguments = whereArguments;
+      return this;
+    }
+
     public Pagination<T> Fetch<T>(IDbConnection db) {
       Pagination<T> response = new Pagination<T>();
       response.page = this.request.page ;
@@ -61,7 +70,7 @@ namespace Advancity.Repositories {
       // We should update table name and where conditions if there is any
       sql = sql
         .Replace("{TABLE_NAME}", this.table)
-        .Replace("{WHERE}", "");
+        .Replace("{WHERE}", "WHERE " + this.whereSQL);
 
       // In here, we should calculate pagination numbers for this query
       this.SetPaginationItems(db, response, sql);
@@ -75,20 +84,19 @@ namespace Advancity.Repositories {
       sql = "SELECT * " + sql + " LIMIT @startAt, @recordPerPage";
 
       // Fetching data
-      response.data = db.Query<T>(sql, new {
-        startAt = ((response.page - 1) * response.recordPerPage),
-        recordPerPage = response.recordPerPage
-      }).ToList();
+      response.data = db.Query<T>(sql, this.whereArguments).ToList();
 
       return response;
     }
     
     private void SetPaginationItems<T> (IDbConnection db, Pagination<T> response, string sql) {
+      this.whereArguments["startAt"] = ((response.page - 1) * response.recordPerPage);
+      this.whereArguments["recordPerPage"] = response.recordPerPage;
       string query = "SELECT COUNT(*) AS total " + sql;
-      response.total = db.Query<TotalResponse>(query, new {
-        startAt = ((response.page - 1) * response.recordPerPage),
-        recordPerPage = response.recordPerPage
-      }).First().total;
+      response.total = db
+        .Query<TotalResponse>(query, this.whereArguments)
+        .First()
+        .total;
       response.pages = (long)Math.Ceiling((decimal)response.total / (decimal)response.recordPerPage);
     }
   }

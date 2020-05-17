@@ -8,7 +8,7 @@ interface IState {
 interface IProps {
   column: string,
   title: string,
-  setFilter(column: string, value: string): void,
+  setFilter(column: string, value: string, isSearch: boolean): void,
   sorting: any,
   clear: any,
   data: any
@@ -18,6 +18,7 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
   state: IState;
   wrapperRef: any;
   search: any;
+  sendQuery: any;
 
   constructor(props: IProps) {
     super(props);
@@ -58,7 +59,7 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
         className="form-control form-control-sm"
         placeholder="Ara"
         value={this.props.data[this.props.column]}
-        onChange={(event) => this.props.setFilter(this.props.column, event.target.value)} />
+        onChange={(event) => this.props.setFilter(this.props.column, event.target.value, true)} />
     </div>
 
     return (

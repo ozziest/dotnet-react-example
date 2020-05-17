@@ -27,7 +27,7 @@ export default class LessonFilter extends TextColumnFilter {
       <label>Şube</label>
       <select className="form-control"
         value={this.props.data[this.props.column]}
-        onChange={(event) => this.props.setFilter(this.props.column, event.target.value)}>
+        onChange={(event) => this.props.setFilter(this.props.column, event.target.value, false)}>
         {this.localState.lessons.map((branch) => 
           <option key={branch.id} value={branch.id}>{branch.title}</option>
         )}

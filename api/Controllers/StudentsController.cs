@@ -37,6 +37,25 @@ namespace Advancity.Controllers
         Paginator paginator = new Paginator(request);
         pagination = paginator
           .Table("Students")
+          .Where(@"
+            (
+              @name IS NULL OR Name LIKE @name
+            )
+            AND (
+              @surname IS NULL OR Surname LIKE @surname
+            )
+            AND (
+              @no IS NULL OR StudentNo LIKE @no
+            )
+            AND (
+              @branch = -1 OR BranchId = @branch
+            )
+          ", new Dictionary<string, dynamic>() {
+            { "name", "%" + request.name + "%" },
+            { "surname", "%" + request.surname + "%" },
+            { "no", "%" + request.no + "%" },
+            { "branch", request.branch }
+          })
           .SetDefaultOrderBy("StudentNo", "ASC")
           .OrderBy(new Dictionary<string, string>() {
             { "no", "StudentNo" },

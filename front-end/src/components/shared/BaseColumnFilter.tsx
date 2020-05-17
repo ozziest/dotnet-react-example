@@ -8,7 +8,7 @@ interface IProps {
   isActive: boolean,
   column: string,
   title: string,
-  setFilter(column: string, value: string): void,
+  setFilter(column: string, value: string, isSearch: boolean): void,
   sorting: any,
   clear: any,
   data: any,

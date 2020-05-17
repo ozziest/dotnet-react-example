@@ -8,6 +8,7 @@ import BranchFilter from './students/filters/BranchFilter';
 import StudentModal from './students/StudentModal'
 import IPagination from './shared/interfaces/IPagination'
 import StudentModel from './students/StudentModel'
+import debounce from 'lodash/debounce'
 
 interface IState {
   orderBy: string,
@@ -27,6 +28,7 @@ interface IState {
 
 export default class Students extends React.Component<Readonly<{}>, IState> {
   state: IState;
+  searchQuery: any;
 
   constructor(props: Readonly<{}>) {
     super(props);
@@ -57,6 +59,9 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.closeStudentModal = this.closeStudentModal.bind(this);
     this.paginate = this.paginate.bind(this);
     this.editStudent = this.editStudent.bind(this);
+    this.searchQuery = debounce(() => {
+      this.paginate(null)
+    }, 300)
   }
 
   componentDidMount () {
@@ -104,16 +109,19 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     })
   }
 
-  setFilter (column: string, value: string) {
+  setFilter (column: string, value: string, isSearch: boolean) {
     this.setState({
       [column]: value
     } as any, () => {
-      this.paginate(null)
+      if (isSearch === false) {
+        this.paginate(null)
+      } else {
+        this.searchQuery()
+      }
     })
   }
 
   paginate (page: number|null) {
-    console.log(this.state)
     axios({
       method: 'GET',
       url: 'https://localhost:5001/api/students',
@@ -121,7 +129,12 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         orderBy: this.state.orderBy,
         orderType: this.state.orderType,
         page: page ? page : this.state.pagination.page,
-        recordPerPage: this.state.pagination.recordPerPage
+        recordPerPage: this.state.pagination.recordPerPage,
+        no: this.state.no,
+        name: this.state.name,
+        surname: this.state.surname,
+        branch: this.state.branch,
+        lesson: this.state.lesson
       }
     }).then((response) => {
       this.setState({
