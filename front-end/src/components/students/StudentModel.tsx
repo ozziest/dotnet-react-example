@@ -3,5 +3,6 @@ export default interface StudentModel {
   branchId: number,
   name: string,
   surname: string,
-  studentNo: string
+  studentNo: string,
+  branchTitle: string
 }

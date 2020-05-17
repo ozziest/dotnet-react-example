@@ -241,7 +241,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
                 </td>
                 <td>{item.name}</td>
                 <td>{item.surname}</td>
-                <td>{item.branchId}</td>
+                <td>{item.branchTitle}</td>
                 <td></td>
               </tr>
             )}

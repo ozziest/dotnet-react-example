@@ -12,7 +12,9 @@ namespace Advancity.Repositories {
     private string table { get; set; }
     private string orderBy { get; set; }
     private string orderType { get; set; }
+    private string selectSQL { get; set; }
     private string whereSQL { get; set; }
+    private string joinSQL { get; set; }
     private Dictionary<string, dynamic> whereArguments { get; set; }
     private PaginateRequest request { get; set; }
 
@@ -20,6 +22,7 @@ namespace Advancity.Repositories {
       this.orderType = "ASC";
       this.request = request;
       this.whereSQL = "";
+      this.selectSQL = "*";
     }
 
     public Paginator Table(string table) {
@@ -59,17 +62,28 @@ namespace Advancity.Repositories {
       return this;
     }
 
+    public Paginator Select(string selectSQL) {
+      this.selectSQL = selectSQL;
+      return this;
+    }
+    
+    public Paginator Joins(string joinSQL) {
+      this.joinSQL = joinSQL;
+      return this;
+    }
+
     public Pagination<T> Fetch<T>(IDbConnection db) {
       Pagination<T> response = new Pagination<T>();
       response.page = this.request.page ;
       response.recordPerPage = this.request.recordPerPage;
 
       // This is the basic query structure
-      string sql = @"FROM {TABLE_NAME} {WHERE}";
+      string sql = @"FROM {TABLE_NAME} {JOINS} {WHERE}";
 
       // We should update table name and where conditions if there is any
       sql = sql
         .Replace("{TABLE_NAME}", this.table)
+        .Replace("{JOINS}", this.joinSQL)
         .Replace("{WHERE}", "WHERE " + this.whereSQL);
 
       // In here, we should calculate pagination numbers for this query
@@ -81,7 +95,7 @@ namespace Advancity.Repositories {
       }
 
       // Final version of our query.
-      sql = "SELECT * " + sql + " LIMIT @startAt, @recordPerPage";
+      sql = "SELECT " + this.selectSQL + " " + sql + " LIMIT @startAt, @recordPerPage";
 
       // Fetching data
       response.data = db.Query<T>(sql, this.whereArguments).ToList();

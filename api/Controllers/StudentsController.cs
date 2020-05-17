@@ -7,6 +7,7 @@ using Advancity.Models;
 using Advancity.Repositories;
 using Advancity.Requests.Students;
 using Advancity.Responses;
+using Advancity.Responses.Students;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -29,26 +30,28 @@ namespace Advancity.Controllers
 
     [HttpGet]
     [Route("api/students")]
-    public Pagination<Student> Paginate([FromQuery] PaginateStudentRequest request)
+    public Pagination<StudentResponse> Paginate([FromQuery] PaginateStudentRequest request)
     {
-      Pagination<Student> pagination = new Pagination<Student>();
+      Pagination<StudentResponse> pagination = new Pagination<StudentResponse>();
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {
         Paginator paginator = new Paginator(request);
         pagination = paginator
           .Table("Students")
+          .Select("Students.*, Branches.Title AS BranchTitle")
+          .Joins("LEFT JOIN Branches ON Branches.Id = Students.BranchId")
           .Where(@"
             (
-              @name IS NULL OR Name LIKE @name
+              @name IS NULL OR Students.Name LIKE @name
             )
             AND (
-              @surname IS NULL OR Surname LIKE @surname
+              @surname IS NULL OR Students.Surname LIKE @surname
             )
             AND (
-              @no IS NULL OR StudentNo LIKE @no
+              @no IS NULL OR Students.StudentNo LIKE @no
             )
             AND (
-              @branch = -1 OR BranchId = @branch
+              @branch = -1 OR Students.BranchId = @branch
             )
           ", new Dictionary<string, dynamic>() {
             { "name", "%" + request.name + "%" },
@@ -62,7 +65,7 @@ namespace Advancity.Controllers
             { "name", "Name" },
             { "surname", "Surname" }
           })
-          .Fetch<Student>(db);
+          .Fetch<StudentResponse>(db);
       }
       return pagination;
     }
