@@ -11,6 +11,7 @@ interface IState {
   name: string,
   surname: string,
   number: string,
+  selectedLevelId: number,
   branchId: number,
   branches: ISelectItem[],
   lessons: ISelectableItem[],
@@ -33,12 +34,10 @@ export default class StudentModal extends React.Component<IProps> {
       name: '',
       surname: '',
       number: '',
+      selectedLevelId: -1,
       branchId: -1,
       branches: [],
-      lessons: [
-        { title: 'Fen', id: 1, isSelected: false },
-        { title: 'Türkçe', id: 2, isSelected: true }
-      ],
+      lessons: [],
       errors: {}
     }
 
@@ -48,26 +47,60 @@ export default class StudentModal extends React.Component<IProps> {
   }
 
   componentDidMount () {
-    axios.get('https://localhost:5001/api/branches').then((response) => {
-      this.setState({
-        branchId: response.data[0].id,
-        branches: response.data.map((item: any) => {
-          return {
-            id: item.id,
-            title: item.title
+    this.fetchBranches()
+    this.fetchLessons()
+  }
+
+  fetchBranches () {
+    axios.get('https://localhost:5001/api/branches')
+      .then((response) => {
+        this.setState({
+          selectedLevelId: response.data[0].level,
+          branchId: response.data[0].id,
+          branches: response.data.map((item: any) => {
+            return {
+              id: item.id,
+              title: item.title,
+              level: item.level
+            }
+          })
+        });
+        if (this.props.student) {
+          let student : StudentModel;
+          student = this.props.student;
+          let selectedBranch : ISelectItem | undefined
+          selectedBranch = this.state.branches.find(item => item.id === student.branchId)
+          let selectedLevelId = null
+          if (selectedBranch) {
+            selectedLevelId = selectedBranch.level
           }
+      
+          this.setState({
+            selectedLevelId,
+            id: this.props.student.id,
+            name: this.props.student.name,
+            surname: this.props.student.surname,
+            number: this.props.student.studentNo,
+            branchId: this.props.student.branchId
+          });
+        }
+      })
+  }
+
+  fetchLessons () {
+    axios.get('https://localhost:5001/api/lessons')
+      .then((response) => {
+        this.setState({
+          lessons: response.data.map((lesson: any) => {
+            return {
+              id: lesson.id,
+              level: lesson.level,
+              title: `${lesson.title} (${lesson.level}. Sınıf)`,
+              isSelected: false
+            }
+          })
         })
       })
-      if (this.props.student) {
-        this.setState({
-          id: this.props.student.id,
-          name: this.props.student.name,
-          surname: this.props.student.surname,
-          number: this.props.student.studentNo,
-          branchId: this.props.student.branchId
-        })  
-      }
-    })
   }
 
   onChangeInput (name: string, value: string) {
@@ -77,7 +110,14 @@ export default class StudentModal extends React.Component<IProps> {
   }
 
   setBranchId (event: any) {
+    let selectedBranch : ISelectItem | undefined
+    selectedBranch = this.state.branches.find(item => item.id === parseInt(event.target.value)) 
+    let selectedLevelId = null
+    if (selectedBranch) {
+      selectedLevelId = selectedBranch.level
+    }
     this.setState({
+      selectedLevelId,
       branchId: parseInt(event.target.value)
     })
   }
@@ -180,7 +220,10 @@ export default class StudentModal extends React.Component<IProps> {
                       <label>Dersler</label>
                       <table className="table">
                         <tbody>
-                          {this.state.lessons.map(lesson => 
+                          {this.state
+                            .lessons
+                            .filter(lesson => lesson.level === this.state.selectedLevelId)
+                            .map(lesson => 
                             <tr key={lesson.id}>
                               <td>
                                 <div className="form-check">

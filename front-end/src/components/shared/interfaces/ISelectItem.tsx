@@ -1,4 +1,5 @@
 export default interface ISelectItem {
   id: number,
-  title: string
+  title: string,
+  level: number|null
 }
