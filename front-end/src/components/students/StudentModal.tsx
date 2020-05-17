@@ -129,6 +129,7 @@ export default class StudentModal extends React.Component<IProps> {
       surname: this.state.surname,
       number: this.state.number,
       branchId: this.state.branchId,
+      selectedLessons: this.state.lessons.filter(item => item.isSelected).map(iteme => iteme.id)
     }
     axios.post('https://localhost:5001/api/students', data)
       .then(() => {

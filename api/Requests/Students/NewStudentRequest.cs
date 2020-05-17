@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Advancity.Requests.Students
@@ -21,5 +22,9 @@ namespace Advancity.Requests.Students
     [Display(Name = "Şube Kodu")]
     [Required]
     public int branchId { get; set; }
+
+    [Display(Name = "Dersler")]
+    [Required]
+    public List<int> selectedLessons { get; set; }
   }
 }
