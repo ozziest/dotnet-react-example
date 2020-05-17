@@ -23,7 +23,8 @@ namespace Advancity.Responses {
     }
 
     public void SetTotal (IDbConnection db, string sql) {
-      this.total = db.Query<TotalResponse>("SELECT COUNT(*) AS total " + sql, new {
+      string query = "SELECT COUNT(*) AS total " + sql.Replace("LIMIT @startAt, @recordPerPage", "");
+      this.total = db.Query<TotalResponse>(query, new {
         startAt = ((this.page - 1) * this.recordPerPage),
         recordPerPage = this.recordPerPage
       }).First().total;

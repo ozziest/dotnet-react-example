@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Navigation from './shared/Navigation';
 import TextColumnFilter from './shared/TextColumnFilter';
+import PaginationRowCount from './shared/PaginationRowCount';
 import LessonFilter from './students/filters/LessonFilter';
 import BranchFilter from './students/filters/BranchFilter';
 import StudentModal from './students/StudentModal'
@@ -42,7 +43,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       pagination: {
         page: 1,
         pages: 0,
-        recordPerPage: 10,
+        recordPerPage: 5,
         total: 0,
         data: []
       }
@@ -52,29 +53,20 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.setFilter = this.setFilter.bind(this);
     this.openStudentModal = this.openStudentModal.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
+    this.paginate = this.paginate.bind(this);
   }
 
   componentDidMount () {
-    axios({
-      method: 'GET',
-      url: 'https://localhost:5001/api/students',
-      params: {
-        page: 1,
-        recordPerPage: 5
-      }
-    }).then((response) => {
-      this.setState({
-        pagination: response.data
-      })
-      console.log(response)
-    })
+    this.paginate(null)
   }
 
   sortDirectly (column: string, type: string) {
     this.setState({
       orderBy: column,
       orderType: type
-    }, this.paginate)
+    }, () => {
+      this.paginate(null)
+    })
   }
 
   onSort (column: string, type: string, force: boolean | null) {
@@ -105,7 +97,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       branch: -1,
       lesson: -1
     }, () => {
-      this.paginate()
+      this.paginate(null)
     })
   }
 
@@ -113,12 +105,25 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     this.setState({
       [column]: value
     } as any, () => {
-      this.paginate()
+      this.paginate(null)
     })
   }
 
-  paginate () {
-    console.log('paginate', JSON.stringify(this.state))
+  paginate (page: number|null) {
+    console.log('paginate', page)
+    axios({
+      method: 'GET',
+      url: 'https://localhost:5001/api/students',
+      params: {
+        page: page ? page : this.state.pagination.page,
+        recordPerPage: this.state.pagination.recordPerPage
+      }
+    }).then((response) => {
+      this.setState({
+        pagination: response.data
+      })
+      console.log(response.data)
+    })
   }
 
   openStudentModal () {
@@ -195,7 +200,12 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
           <tbody>
             {this.state.pagination.data.map((item, index) =>
               <tr key={item.id}>
-                <td><b>{index + 1})</b></td>
+                <td>
+                  <PaginationRowCount
+                    page={this.state.pagination.page}
+                    recordPerPage={this.state.pagination.recordPerPage}
+                    index={index} />
+                </td>
                 <td>{item.studentNo}</td>
                 <td>{item.name}</td>
                 <td>{item.surname}</td>
@@ -207,8 +217,10 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         </table>
   
         <div>
-          245 kayıt arasından 1-10 arasındakiler gösteriliyor.
-          <Navigation></Navigation>
+          <Navigation
+            pages={this.state.pagination.pages}
+            page={this.state.pagination.page}
+            paginate={this.paginate} />
         </div>
       </div>
     );
