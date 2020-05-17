@@ -26,6 +26,7 @@ interface IProps {
 
 export default class StudentModal extends React.Component<IProps> {
   state: IState;
+  studentLessons: any[];
 
   constructor (props: IProps) {
     super(props);
@@ -40,6 +41,7 @@ export default class StudentModal extends React.Component<IProps> {
       lessons: [],
       errors: {}
     }
+    this.studentLessons = []
 
     this.onChangeInput = this.onChangeInput.bind(this);
     this.setBranchId = this.setBranchId.bind(this);
@@ -47,60 +49,94 @@ export default class StudentModal extends React.Component<IProps> {
   }
 
   componentDidMount () {
-    this.fetchBranches()
-    this.fetchLessons()
+    Promise.all([
+      this.fetchBranches(),
+      this.fetchLessons(),
+      this.fetchStudentLessons()
+    ]).then(() => {
+      if (this.props.student) {
+        let student : StudentModel;
+        student = this.props.student;
+        let selectedBranch : ISelectItem | undefined
+        selectedBranch = this.state.branches.find(item => item.id === student.branchId)
+        let selectedLevelId = null
+        if (selectedBranch) {
+          selectedLevelId = selectedBranch.level
+        }
+
+        // We should mark as selected if the user has any selected lesson
+        const selectedLessonIds = this.studentLessons.map(item => item.lessonId)
+        this.setState((state: IState) => {
+          state.lessons
+            .filter(item => selectedLessonIds.indexOf(item.id) > -1)
+            .forEach(item => item.isSelected = true)
+          return state
+        })
+    
+        this.setState({
+          selectedLevelId,
+          id: this.props.student.id,
+          name: this.props.student.name,
+          surname: this.props.student.surname,
+          number: this.props.student.studentNo,
+          branchId: this.props.student.branchId
+        });
+      }
+    })
+  }
+
+  fetchStudentLessons () {
+    return new Promise((resolve) => {
+      if (!this.props.student) {
+        return resolve()
+      }
+      
+      axios.get(`https://localhost:5001/api/students/${this.props.student.id}/lessons`)
+        .then((response) => {
+          this.studentLessons = response.data
+          resolve()
+        })
+    })
   }
 
   fetchBranches () {
-    axios.get('https://localhost:5001/api/branches')
-      .then((response) => {
-        this.setState({
-          selectedLevelId: response.data[0].level,
-          branchId: response.data[0].id,
-          branches: response.data.map((item: any) => {
-            return {
-              id: item.id,
-              title: item.title,
-              level: item.level
-            }
-          })
-        });
-        if (this.props.student) {
-          let student : StudentModel;
-          student = this.props.student;
-          let selectedBranch : ISelectItem | undefined
-          selectedBranch = this.state.branches.find(item => item.id === student.branchId)
-          let selectedLevelId = null
-          if (selectedBranch) {
-            selectedLevelId = selectedBranch.level
-          }
-      
+    return new Promise((resolve) => {
+      axios.get('https://localhost:5001/api/branches')
+        .then((response) => {
           this.setState({
-            selectedLevelId,
-            id: this.props.student.id,
-            name: this.props.student.name,
-            surname: this.props.student.surname,
-            number: this.props.student.studentNo,
-            branchId: this.props.student.branchId
+            selectedLevelId: response.data[0].level,
+            branchId: response.data[0].id,
+            branches: response.data.map((item: any) => {
+              return {
+                id: item.id,
+                title: item.title,
+                level: item.level
+              }
+            })
           });
-        }
-      })
+          resolve()
+        })
+    });
   }
 
   fetchLessons () {
-    axios.get('https://localhost:5001/api/lessons')
-      .then((response) => {
-        this.setState({
-          lessons: response.data.map((lesson: any) => {
-            return {
-              id: lesson.id,
-              level: lesson.level,
-              title: `${lesson.title} (${lesson.level}. Sınıf)`,
-              isSelected: false
-            }
+    return new Promise((resolve) => {
+      axios
+        .get('https://localhost:5001/api/lessons')
+        .then((response) => {
+          this.setState({
+            lessons: response.data.map((lesson: any) => {
+              return {
+                id: lesson.id,
+                level: lesson.level,
+                title: `${lesson.title} (${lesson.level}. Sınıf)`,
+                isSelected: false
+              }
+            })
           })
+          resolve()
         })
-      })
+    })
   }
 
   onChangeInput (name: string, value: string) {
@@ -111,14 +147,21 @@ export default class StudentModal extends React.Component<IProps> {
 
   setBranchId (event: any) {
     let selectedBranch : ISelectItem | undefined
+    let branchId : number;
     selectedBranch = this.state.branches.find(item => item.id === parseInt(event.target.value)) 
-    let selectedLevelId = null
+    let selectedLevelId : number|null;
     if (selectedBranch) {
       selectedLevelId = selectedBranch.level
+      branchId = selectedBranch.id
     }
-    this.setState({
-      selectedLevelId,
-      branchId: parseInt(event.target.value)
+    this.setState((state: IState) => {
+      // First we should clear old selections if there is any
+      state.lessons.forEach(item => item.isSelected = false);
+      if (selectedLevelId) {
+        state.selectedLevelId = selectedLevelId
+        state.branchId = branchId
+      }
+      return state
     })
   }
   
