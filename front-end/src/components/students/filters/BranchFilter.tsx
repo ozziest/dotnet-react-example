@@ -1,49 +1,52 @@
 import React from 'react';
-
-interface IProps {
-  data: any,
-  setFilter: any
-}
+import TextColumnFilter from './../../shared/TextColumnFilter'
+import BaseColumnFilter from './../../shared/BaseColumnFilter'
+import ISelectItem from './../../shared/interfaces/ISelectItem'
 
 interface IState {
-  value: any,
-  branches: any[]
+  branches: ISelectItem[]
 }
 
-export default class BranchFilter extends React.Component<IProps, IState> {
-  state: IState;
+export default class BranchFilter extends TextColumnFilter {
+  localState: IState;
 
-  constructor (props: IProps) {
-    super(props);
-    this.state = {
-      value: this.props.data.branch,
+  constructor (props: any) {
+    super(props)
+    this.localState = {
       branches: [
-        { label: 'Tümü', value: -1 },
-        { label: "9-A", value: 1 },
-        { label: "10-A", value: 2 },
-        { label: "11-A", value: 3 }
+        { title: 'Tümü', id: -1 },
+        { title: "9-A", id: 1 },
+        { title: "10-A", id: 2 },
+        { title: "11-A", id: 3 }
       ]
     }
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange (event: any) {
-    this.setState({
-      value: event.target.value
-    })
-    this.props.setFilter(event.target.value)
   }
 
   render () {
+    let filterComponent = <div className="form-group">
+      <label>Şube</label>
+      <select className="form-control"
+        value={this.props.data[this.props.column]}
+        onChange={(event) => this.props.setFilter(this.props.column, event.target.value)}>
+        {this.localState.branches.map((branch) => 
+          <option key={branch.id} value={branch.id}>{branch.title}</option>
+        )}
+      </select>
+    </div>
+
     return (
-      <div className="form-group">
-        <label>Şube</label>
-        <select className="form-control" value={this.state.value} onChange={this.handleChange}>
-          {this.state.branches.map((branch) => 
-            <option key={branch.value} value={branch.value}>{branch.label}</option>
-          )}
-        </select>
-      </div>
+      <BaseColumnFilter
+        isActive={this.state.isActive}
+        column={this.props.column}
+        title={this.props.title}
+        setFilter={this.props.setFilter}
+        sorting={this.props.sorting}
+        clear={this.props.clear}
+        data={this.props.data}
+        filterComponent={filterComponent}
+        toggleActive={this.toggleActive}
+        setWrapperRef={this.setWrapperRef}
+        />
     );
   }
 }

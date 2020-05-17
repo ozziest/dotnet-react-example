@@ -1,6 +1,6 @@
 import React from 'react';
 import Navigation from './shared/Navigation';
-import ColumnFilter from './shared/ColumnFilter';
+import TextColumnFilter from './shared/TextColumnFilter';
 import LessonFilter from './students/filters/LessonFilter';
 import BranchFilter from './students/filters/BranchFilter';
 
@@ -34,11 +34,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
-    this.setNoFilter = this.setNoFilter.bind(this)
-    this.setNameFilter = this.setNameFilter.bind(this)
-    this.setSurnameFilter = this.setSurnameFilter.bind(this)
-    this.setBranchFilter = this.setBranchFilter.bind(this)
-    this.setLessonFilter = this.setLessonFilter.bind(this)
+    this.setFilter = this.setFilter.bind(this)
   }
 
   sortDirectly (column: string, type: string) {
@@ -80,42 +76,10 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     })
   }
 
-  setNoFilter (value: string) {
+  setFilter (column: string, value: string) {
     this.setState({
-      no: value
-    }, () => {
-      this.paginate()
-    })
-  }
-
-  setNameFilter (value: string) {
-    this.setState({
-      name: value
-    }, () => {
-      this.paginate()
-    })
-  }
-
-  setSurnameFilter (value: string) {
-    this.setState({
-      surname: value
-    }, () => {
-      this.paginate()
-    })
-  }
-
-  setBranchFilter (value: number) {
-    this.setState({
-      branch: value
-    }, () => {
-      this.paginate()
-    })
-  }
-
-  setLessonFilter (value: number) {
-    this.setState({
-      lesson: value
-    }, () => {
+      [column]: value
+    } as any, () => {
       this.paginate()
     })
   }
@@ -140,46 +104,41 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
           <thead>
             <tr>
               <th className="row-count">#</th>
-              <ColumnFilter
+              <TextColumnFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setNoFilter}
+                setFilter={this.setFilter}
                 column="no"
-                title="No"
-                filter={null} />
-              <ColumnFilter
+                title="No" />
+              <TextColumnFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setNameFilter}
+                setFilter={this.setFilter}
                 column="name"
-                title="Ad"
-                filter={null} />
-              <ColumnFilter
+                title="Ad" />
+              <TextColumnFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setSurnameFilter}
+                setFilter={this.setFilter}
                 column="surname"
-                title="Soyad"
-                filter={null} />
-              <ColumnFilter
+                title="Soyad" />
+              <BranchFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setBranchFilter}
+                setFilter={this.setFilter}
                 column="branch"
-                title="Şube"
-                filter={<BranchFilter data={this.state} setFilter={this.setBranchFilter} />} />
-              <ColumnFilter
+                title="Şube" />
+              <LessonFilter
                 clear={this.clearFilter}
                 data={this.state}
                 sorting={this.onSort}
-                setFilter={this.setLessonFilter}
+                setFilter={this.setFilter}
                 column="lesson"
-                title="Dersler"
-                filter={<LessonFilter data={this.state} setFilter={this.setLessonFilter} />} />
+                title="Ders" />
             </tr>
           </thead>
           <tbody>
