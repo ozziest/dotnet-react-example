@@ -1,19 +1,31 @@
 import React from 'react';
 import axios from 'axios';
-import TextColumnFilter from './../../shared/TextColumnFilter'
 import BaseColumnFilter from './../../shared/BaseColumnFilter'
 import ISelectItem from './../../shared/interfaces/ISelectItem'
-import IColumnFilterState from './../../shared/interfaces/IColumnFilterState'
 
-interface IState extends IColumnFilterState {
+interface IState {
+  isActive: boolean,
   branches: ISelectItem[]
 }
 
-export default class BranchFilter extends TextColumnFilter {
+interface IProps {
+  column: string,
+  title: string,
+  setFilter(column: string, value: string, isSearch: boolean): void,
+  sorting: any,
+  clear: any,
+  data: any
+}
+
+export default class ColumnFilter extends React.Component<IProps, IState> {
   state: IState;
+  wrapperRef: any;
 
   constructor (props: any) {
     super(props)
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.toggleActive = this.toggleActive.bind(this);
     this.state = {
       isActive: false,
       branches: []
@@ -21,7 +33,7 @@ export default class BranchFilter extends TextColumnFilter {
   }
 
   componentDidMount () {
-    console.log('componentDidMount')
+    document.addEventListener('mousedown', this.handleClickOutside);
     axios.get('https://localhost:5001/api/branches').then(response => {
       response.data.unshift({
         id: -1,
@@ -35,9 +47,27 @@ export default class BranchFilter extends TextColumnFilter {
             title: item.title
           }
         })
-      } as any)
+      })
     })
   }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+  
+  setWrapperRef (node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: { target: any; }) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({ isActive: false })
+    }
+  }
+
+  toggleActive () {
+    this.setState({ isActive : !this.state.isActive })
+  }  
 
   render () {
     let filterComponent = <div className="form-group">

@@ -14,8 +14,6 @@ interface IProps {
 export default class ColumnFilter extends React.Component<IProps, IColumnFilterState> {
   state: IColumnFilterState;
   wrapperRef: any;
-  search: any;
-  sendQuery: any;
 
   constructor(props: IProps) {
     super(props);

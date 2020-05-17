@@ -1,25 +1,76 @@
 import React from 'react';
-import TextColumnFilter from './../../shared/TextColumnFilter'
+import axios from 'axios';
 import BaseColumnFilter from './../../shared/BaseColumnFilter'
 import ISelectItem from './../../shared/interfaces/ISelectItem'
+import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface IState {
+  isActive: boolean,
   lessons: ISelectItem[]
 }
 
-export default class LessonFilter extends TextColumnFilter {
-  localState: IState;
+interface IProps {
+  column: string,
+  title: string,
+  setFilter(column: string, value: string, isSearch: boolean): void,
+  sorting: any,
+  clear: any,
+  data: any
+}
+
+export default class ColumnFilter extends React.Component<IProps, IState> {
+  state: IState;
+  wrapperRef: any;
 
   constructor (props: any) {
     super(props)
-    this.localState = {
-      lessons: [
-        { title: 'Tümü', id: -1 },
-        { title: "Fen Bilgisi", id: 1 },
-        { title: "Matematik", id: 2 },
-        { title: "Türkçe", id: 3 }
-      ]
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.toggleActive = this.toggleActive.bind(this);
+    this.state = {
+      isActive: false,
+      lessons: []
     }
+  }
+
+  componentDidMount () {
+    document.addEventListener('mousedown', this.handleClickOutside);
+    axios.get('https://localhost:5001/api/lessons').then(response => {
+      response.data.forEach((item:any) => {
+        item.title = `${item.title} (${item.level}. Sınıf)`
+      })
+      response.data.unshift({
+        id: -1,
+        title: 'Tümü'
+      })
+
+      this.setState({
+        lessons: response.data.map((item: any) => {
+          return {
+            id: item.id,
+            title: item.title
+          }
+        })
+      })
+    })
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+  
+  setWrapperRef (node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: { target: any; }) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({ isActive: false })
+    }
+  }
+
+  toggleActive () {
+    this.setState({ isActive : !this.state.isActive })
   }
 
   render () {
@@ -28,7 +79,7 @@ export default class LessonFilter extends TextColumnFilter {
       <select className="form-control"
         value={this.props.data[this.props.column]}
         onChange={(event) => this.props.setFilter(this.props.column, event.target.value, false)}>
-        {this.localState.lessons.map((branch) => 
+        {this.state.lessons.map((branch) => 
           <option key={branch.id} value={branch.id}>{branch.title}</option>
         )}
       </select>
