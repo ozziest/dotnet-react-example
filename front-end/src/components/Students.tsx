@@ -5,6 +5,8 @@ import TextColumnFilter from './shared/TextColumnFilter';
 import LessonFilter from './students/filters/LessonFilter';
 import BranchFilter from './students/filters/BranchFilter';
 import StudentModal from './students/StudentModal'
+import IPagination from './shared/interfaces/IPagination'
+import StudentModel from './students/StudentModel'
 
 interface IState {
   orderBy: string,
@@ -16,8 +18,10 @@ interface IState {
   surname: string | null,
   branch: number,
   lesson: number,
-  isStudentModalOpen: boolean
+  isStudentModalOpen: boolean,
+  pagination: IPagination<StudentModel>
 }
+
 
 export default class Students extends React.Component<Readonly<{}>, IState> {
   state: IState;
@@ -34,12 +38,19 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       surname: '',
       branch: -1,
       lesson: -1,
-      isStudentModalOpen: false
+      isStudentModalOpen: false,
+      pagination: {
+        page: 1,
+        pages: 0,
+        recordPerPage: 10,
+        total: 0,
+        data: []
+      }
     };
     this.onSort = this.onSort.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.setFilter = this.setFilter.bind(this);
-    this.openStudentModel = this.openStudentModel.bind(this);
+    this.openStudentModal = this.openStudentModal.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
   }
 
@@ -52,6 +63,9 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
         recordPerPage: 5
       }
     }).then((response) => {
+      this.setState({
+        pagination: response.data
+      })
       console.log(response)
     })
   }
@@ -107,7 +121,7 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
     console.log('paginate', JSON.stringify(this.state))
   }
 
-  openStudentModel () {
+  openStudentModal () {
     this.setState({
       isStudentModalOpen: true
     })
@@ -130,15 +144,13 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
       <div>
         <h2>
           Öğrenciler
-          <button className="btn btn-success float-right" onClick={this.openStudentModel}>
+          <button className="btn btn-success float-right" onClick={this.openStudentModal}>
             Ekle
           </button>
         </h2>
 
         {studentModal}
   
-        <hr />
-
         <table className="table table-border">
           <thead>
             <tr>
@@ -181,14 +193,16 @@ export default class Students extends React.Component<Readonly<{}>, IState> {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>23</td>
-              <td>Özgür</td>
-              <td>Işıklı</td>
-              <td>12-BT</td>
-              <td>3</td>
-            </tr>
+            {this.state.pagination.data.map((item, index) =>
+              <tr key={item.id}>
+                <td><b>{index + 1})</b></td>
+                <td>{item.studentNo}</td>
+                <td>{item.name}</td>
+                <td>{item.surname}</td>
+                <td>{item.branchId}</td>
+                <td></td>
+              </tr>
+            )}
           </tbody>
         </table>
   
