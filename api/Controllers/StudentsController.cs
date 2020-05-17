@@ -75,6 +75,10 @@ namespace Advancity.Controllers
     [Route("api/students")]
     public Student Post([FromBody] NewStudentRequest form)
     {
+      // if (ModelState.IsValid == false) {
+      //   throw new Exception("Not Valid!");
+      // }
+
       Student student = new Student();
       using (IDbConnection db = new SqliteConnection(this.configuration.GetSection("ConnectionString").Value))
       {

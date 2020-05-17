@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace Advancity
 {
@@ -28,6 +30,7 @@ namespace Advancity
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddControllers();
+      services.AddLocalization();
       services.AddCors(options =>
       {
         options.AddDefaultPolicy(builder => 
@@ -54,6 +57,10 @@ namespace Advancity
       app.UseCors();
 
       app.UseAuthorization();
+
+      var cultureInfo = new CultureInfo("tr-TR");
+      CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+      CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
       app.UseEndpoints(endpoints =>
       {

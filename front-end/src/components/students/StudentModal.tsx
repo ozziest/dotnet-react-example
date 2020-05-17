@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios'
 import ISelectItem from './../shared/interfaces/ISelectItem'
 import StudentModel from './StudentModel'
+import ValidationError from './../shared/ValidationError'
 
 interface IState {
   id: number|null,
@@ -9,7 +10,8 @@ interface IState {
   surname: string,
   number: string,
   branchId: number,
-  branches: ISelectItem[]
+  branches: ISelectItem[],
+  errors: { [column: string] : string[] }
 }
 
 interface IProps {
@@ -29,8 +31,10 @@ export default class StudentModal extends React.Component<IProps> {
       surname: '',
       number: '',
       branchId: -1,
-      branches: []
+      branches: [],
+      errors: {}
     }
+
     this.onChangeInput = this.onChangeInput.bind(this);
     this.setBranchId = this.setBranchId.bind(this);
     this.save = this.save.bind(this);
@@ -84,6 +88,11 @@ export default class StudentModal extends React.Component<IProps> {
         this.props.refresh(null)
         this.props.close()
       })
+      .catch((error) => {
+        this.setState({
+          errors: error.response.data.errors
+        })
+      })
   }
 
   render () {
@@ -105,6 +114,7 @@ export default class StudentModal extends React.Component<IProps> {
                     className="form-control"
                     value={this.state.number}
                     onChange={(event) => this.onChangeInput('number', event.target.value)} />
+                  <ValidationError errors={this.state.errors} column="number" />
                 </div>
                 <div className="form-group">
                   <label>Ad</label>
@@ -112,6 +122,7 @@ export default class StudentModal extends React.Component<IProps> {
                     className="form-control"
                     value={this.state.name}
                     onChange={(event) => this.onChangeInput('name', event.target.value)} />
+                  <ValidationError errors={this.state.errors} column="name" />
                 </div>
                 <div className="form-group">
                   <label>Soyad</label>
@@ -119,6 +130,7 @@ export default class StudentModal extends React.Component<IProps> {
                     className="form-control"
                     value={this.state.surname}
                     onChange={(event) => this.onChangeInput('surname', event.target.value)} />
+                  <ValidationError errors={this.state.errors} column="surname" />
                 </div>
                 <div className="form-group">
                   <label>Şube</label>
@@ -129,6 +141,7 @@ export default class StudentModal extends React.Component<IProps> {
                       <option key={branch.id} value={branch.id}>{branch.title}</option>
                     )}
                   </select>
+                  <ValidationError errors={this.state.errors} column="branchId" />
                 </div>
               </form>
             </div>

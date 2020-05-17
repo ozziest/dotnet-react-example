@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import BaseColumnFilter from './../../shared/BaseColumnFilter'
 import ISelectItem from './../../shared/interfaces/ISelectItem'
-import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface IState {
   isActive: boolean,

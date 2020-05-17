@@ -67,7 +67,7 @@ export default class ColumnFilter extends React.Component<IProps, IState> {
 
   toggleActive () {
     this.setState({ isActive : !this.state.isActive })
-  }  
+  }
 
   render () {
     let filterComponent = <div className="form-group">
